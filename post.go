@@ -178,8 +178,8 @@ type VideoPost struct {
 	Html5Capable bool   `json:"html5_capable"`
 	PermalinkUrl string `json:"permalink_url"`
 	Players      []struct {
-		EmbedCode string      `json:"embed_code"`
-		Width     interface{} `json:"width"`
+		EmbedCode StringOrBool `json:"embed_code"`
+		Width     interface{}  `json:"width"`
 	} `json:"player"`
 	ThumbnailHeight uint32 `json:"thumbnail_height"`
 	ThumbnailUrl    string `json:"thumbnail_url"`
@@ -211,6 +211,28 @@ type PhotoSize struct {
 	Height uint32 `json:"height"`
 	Width  uint32 `json:"width"`
 	Url    string `json:"url"`
+}
+
+// StringOrBool is a string that can be unmarshalled from a string or a boolean value.
+type StringOrBool string
+
+// UnmarshalJSON implements the json.Unmarshaler interface to ingest strings or boolean values.
+func (sb *StringOrBool) UnmarshalJSON(b []byte) error {
+	if b[0] == '"' {
+		return json.Unmarshal(b, (*string)(sb))
+	}
+
+	var bl bool
+	if err := json.Unmarshal(b, &bl); err != nil {
+		return err
+	}
+
+	if bl {
+		*sb = StringOrBool("true")
+	} else {
+		*sb = StringOrBool("false")
+	}
+	return nil
 }
 
 // Convenience method for ease of use- renders a Post as a JSON string
