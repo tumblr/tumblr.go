@@ -8,7 +8,7 @@ import (
 	"reflect"
 )
 
-// Representation of a list of Posts
+// Posts represents a list of MiniPosts, which have a minimal set of information.
 type Posts struct {
 	client      ClientInterface
 	response    Response
@@ -17,7 +17,7 @@ type Posts struct {
 	TotalPosts  int64      `json:"total_posts"`
 }
 
-// Method to retrieve fully fleshed post data from stubs and cache result
+// All will retrieve fully fleshed post data from stubs and cache result.
 func (p *Posts) All() ([]PostInterface, error) {
 	var err error = nil
 	if p.parsedPosts == nil {
@@ -36,7 +36,7 @@ func (p *Posts) All() ([]PostInterface, error) {
 	return p.parsedPosts, err
 }
 
-// Method to retrieve a single Post entity at a given index; returns nil if index is out of bounds
+// Get retrieves a single Post entity at a given index or returns nil if index is out of bounds.
 func (p *Posts) Get(index uint) PostInterface {
 	if posts, err := p.All(); err == nil {
 		if index >= uint(len(posts)) {
@@ -47,7 +47,7 @@ func (p *Posts) Get(index uint) PostInterface {
 	return nil
 }
 
-// The basics for what is needed in a Post
+// MiniPost stores the basics for what is needed in a Post.
 type MiniPost struct {
 	Id        uint64 `json:"id"`
 	Type      string `json:"type"`
@@ -55,13 +55,13 @@ type MiniPost struct {
 	ReblogKey string `json:"reblog_key"`
 }
 
-// Starting point for performing operations on a post
+// PostRef is a base struct used as a starting point for performing operations on a post.
 type PostRef struct {
 	MiniPost
 	client ClientInterface
 }
 
-// The common fields on any post, no matter what type
+// Post holds the common fields of any post type.
 type Post struct {
 	PostRef
 	Body             string        `json:"body"`
@@ -98,7 +98,7 @@ type Post struct {
 	Trail             []ReblogTrailItem `json:"trail"`
 }
 
-// Post substructure
+// ReblogTrailItem represents an item in the "trail" to the original, root Post.
 type ReblogTrailItem struct {
 	Blog          Blog   `json:"blog"`
 	Content       string `json:"content"`
@@ -110,20 +110,20 @@ type ReblogTrailItem struct {
 	} `json:"post"`
 }
 
-// PostInterface for use in typed structures which could contain any of the below subtypes
+// PostInterface is the interface for any concrete Post type to retrieve a property.
 type PostInterface interface {
 	GetProperty(key string) (interface{}, error)
 	GetSelf() *Post
 }
 
-// Post subtype
+// QuotePost represents a Quote Post.
 type QuotePost struct {
 	Post
 	Source string `json:"source,omitempty"`
 	Text   string `json:"text"`
 }
 
-// Post subtype
+// ChatPost represents a Chat Post.
 type ChatPost struct {
 	Post
 	Dialog []struct {
@@ -133,13 +133,13 @@ type ChatPost struct {
 	} `json:"dialog"`
 }
 
-// Post subtype
+// TextPost represents a Text Post.
 type TextPost struct {
 	Post
 	Title string `json:"title"`
 }
 
-// Post subtype
+// LinkPost represents a Link Post.
 type LinkPost struct {
 	Post
 	Description string `json:"description"`
@@ -149,7 +149,7 @@ type LinkPost struct {
 	Url         string `json:"url"`
 }
 
-// Post subtype
+// AnswerPost represents an Answer Post.
 type AnswerPost struct {
 	Post
 	Answer     string `json:"answer"`
@@ -159,7 +159,7 @@ type AnswerPost struct {
 	Question   string `json:"question"`
 }
 
-// Post subtype
+// AudioPost represents an Audio Post.
 type AudioPost struct {
 	Post
 	AlbumArt       string `json:"album_art"`
@@ -172,7 +172,7 @@ type AudioPost struct {
 	Plays          uint64 `json:"plays"`
 }
 
-// Post subtype
+// VideoPost represents a Video Post.
 type VideoPost struct {
 	Post
 	Html5Capable bool   `json:"html5_capable"`
@@ -192,21 +192,21 @@ type VideoPost struct {
 	VideoType string `json:"video_type"`
 }
 
-// Post subtype
+// PhotoPost represents a Photo Post.
 type PhotoPost struct {
 	Post
 	ImagePermalink string  `json:"image_permalink"`
 	Photos         []Photo `json:"photos"`
 }
 
-// Photo post substructure
+// Photo represents one photo in a PhotoPost.
 type Photo struct {
 	AltSizes     []PhotoSize `json:"alt_sizes"`
 	Caption      string      `json:"caption"`
 	OriginalSize PhotoSize   `json:"original_size"`
 }
 
-// Photo substructure
+// PhotoSize represents a particular size for a Photo.
 type PhotoSize struct {
 	Height uint32 `json:"height"`
 	Width  uint32 `json:"width"`
@@ -235,12 +235,12 @@ func (sb *StringOrBool) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Convenience method for ease of use- renders a Post as a JSON string
+// String returns the Post as a JSON string.
 func (p *Post) String() string {
 	return jsonStringify(*p)
 }
 
-// Convenience method for easy retrieval of one-off values
+// GetProperty uses reflection to retrieve one-off field values.
 func (p *Post) GetProperty(key string) (interface{}, error) {
 	if field, exists := reflect.TypeOf(p).Elem().FieldByName(key); exists {
 		return reflect.ValueOf(p).Elem().FieldByIndex(field.Index), nil
@@ -248,7 +248,7 @@ func (p *Post) GetProperty(key string) (interface{}, error) {
 	return nil, errors.New(fmt.Sprintf("Property %s does not exist", key))
 }
 
-// Useful for converting a PostInterface into a Post
+// GetSelf returns the Post from a PostInterface.
 func (p *Post) GetSelf() *Post {
 	return p
 }
@@ -271,22 +271,22 @@ func queryPosts(client ClientInterface, path, name string, params url.Values) (*
 	return nil, err
 }
 
-// Retrieve a blog's posts, in the API docs you can find how to filter by ID, type, etc
+// GetPosts retrieves a blog's posts, in the API docs you can find how to filter by ID, type, etc.
 func GetPosts(client ClientInterface, name string, params url.Values) (*Posts, error) {
 	return queryPosts(client, "/blog/%s/posts", name, params)
 }
 
-// Retrieve a blog's Queue
+// GetQueue retrieves a blog's queued posts.
 func GetQueue(client ClientInterface, name string, params url.Values) (*Posts, error) {
 	return queryPosts(client, "/blog/%s/posts/queue", name, params)
 }
 
-// Retrieve a blog's drafts
+// GetDrafts retrieves a blog's draft posts.
 func GetDrafts(client ClientInterface, name string, params url.Values) (*Posts, error) {
 	return queryPosts(client, "/blog/%s/posts/draft", name, params)
 }
 
-// Retrieve a blog's submsisions
+// GetSubmissions retrieves a blog's submission posts.
 func GetSubmissions(client ClientInterface, name string, params url.Values) (*Posts, error) {
 	return queryPosts(client, "/blog/%s/posts/submission", name, params)
 }
@@ -313,7 +313,7 @@ func doPost(client ClientInterface, path, blogName string, params url.Values) (*
 	return nil, err
 }
 
-// Creates a PostRef with the given properties set
+// NewPostRefById creates a PostRef for the id.
 func NewPostRefById(client ClientInterface, id uint64) *PostRef {
 	return &PostRef{
 		client: client,
@@ -323,7 +323,7 @@ func NewPostRefById(client ClientInterface, id uint64) *PostRef {
 	}
 }
 
-// Creates a PostRef with the given properties set
+// NewPostRef creates a PostRef for the MiniPost.
 func NewPostRef(client ClientInterface, post *MiniPost) *PostRef {
 	return &PostRef{
 		client:   client,
@@ -331,28 +331,28 @@ func NewPostRef(client ClientInterface, post *MiniPost) *PostRef {
 	}
 }
 
-// Sets PostRef's client
+// SetClient sets the client member of the PostRef.
 func (r *PostRef) SetClient(c ClientInterface) {
 	r.client = c
 }
 
-// Create a post, return the ID on success, error on failure
+// CreatePost will create a Post on tumblr for the blog in name.
 func CreatePost(client ClientInterface, name string, params url.Values) (*PostRef, error) {
 	return doPost(client, "/blog/%s/post", name, params)
 }
 
-// Edit a given post, returns nil if successful, error on failure
+// EditPost will update a Post on tumblr for the blog in name and Post in postId.
 func EditPost(client ClientInterface, blogName string, postId uint64, params url.Values) error {
 	_, err := client.PostWithParams(blogPath("/blog/%s/post/edit", blogName), setPostId(postId, params))
 	return err
 }
 
-// Convenience method to allow calling post.Edit(params)
+// Edit will update this Post on tumblr.
 func (p *PostRef) Edit(params url.Values) error {
 	return EditPost(p.client, p.BlogName, p.Id, params)
 }
 
-// Reblog a given post to the given blog, returns the reblog's post id if successful, else the error
+// ReblogPost will reblog the post in postId and reblogKey to the blog blogName.
 func ReblogPost(client ClientInterface, blogName string, postId uint64, reblogKey string, params url.Values) (*PostRef, error) {
 	if reblogKey == "" {
 		return nil, errors.New("No reblog key provided")
@@ -361,18 +361,18 @@ func ReblogPost(client ClientInterface, blogName string, postId uint64, reblogKe
 	return doPost(client, "/blog/%s/post/reblog", blogName, setPostId(postId, params))
 }
 
-// Convenience method to allow calling post.Reblog(params)
+// ReblogOnBlog will reblog this Post to the blog in name.
 func (p *PostRef) ReblogOnBlog(name string, params url.Values) (*PostRef, error) {
 	return ReblogPost(p.client, name, p.Id, p.ReblogKey, params)
 }
 
-// Delete a given blog's post by ID, nil if successful, error on failure
+// DeletePost will delete a Post on tumblr for the blog in name and Post in postId.
 func DeletePost(client ClientInterface, name string, postId uint64) error {
 	_, err := client.PostWithParams(blogPath("/blog/%s/post/delete", name), setPostId(postId, url.Values{}))
 	return err
 }
 
-// Convenience method to allow calling post.Delete()
+// Delete will delete this Post on tumblr.
 func (p *PostRef) Delete() error {
 	return DeletePost(p.client, p.BlogName, p.Id)
 }
@@ -400,12 +400,12 @@ func makePostFromType(t string) (PostInterface, error) {
 	return &Post{}, errors.New(fmt.Sprintf("Unknown type %s", t))
 }
 
-// Likes a Post on behalf of the current user
+// Like will like this Post on behalf of the current user.
 func (p *PostRef) Like() error {
 	return LikePost(p.client, p.Id, p.ReblogKey)
 }
 
-// Unlikes a Post on behalf of the current user
+// Unlikes will unlike a Post on behalf of the current user.
 func (p *PostRef) Unlike() error {
 	return UnlikePost(p.client, p.Id, p.ReblogKey)
 }
