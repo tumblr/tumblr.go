@@ -1,16 +1,16 @@
 package tumblr
 
 import (
-	"net/url"
 	"encoding/json"
+	"net/url"
 )
 
 type Likes struct {
-	client ClientInterface
-	response *Response
+	client      ClientInterface
+	response    *Response
 	parsedPosts []PostInterface
-	Posts []MiniPost `json:"liked_posts"`
-	TotalLikes uint64 `json:"liked_count"`
+	Posts       []MiniPost `json:"liked_posts"`
+	TotalLikes  uint64     `json:"liked_count"`
 }
 
 // Retrieves a Users's list of Posts they have liked
@@ -55,13 +55,13 @@ func UnlikePost(client ClientInterface, postId uint64, reblogKey string) error {
 }
 
 // Return an array of full post objects (instead of the default array of MiniPosts initially created)
-func (l *Likes)Full() ([]PostInterface, error) {
+func (l *Likes) Full() ([]PostInterface, error) {
 	var err error = nil
 	if l.parsedPosts == nil {
 		r := struct {
-			Response struct{
-					 Posts []PostInterface `json:"liked_posts"`
-				 } `json:"response"`
+			Response struct {
+				Posts []PostInterface `json:"liked_posts"`
+			} `json:"response"`
 		}{}
 		r.Response.Posts = makePostsFromMinis(l.Posts, l.client)
 		if err = json.Unmarshal(l.response.body, &r); err != nil {

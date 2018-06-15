@@ -1,52 +1,52 @@
 package tumblr
 
 import (
-	"strings"
-	"errors"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 // Reference to a blog which can be used to perform further blog actions
 type BlogRef struct {
 	client ClientInterface
-	Name string `json:"name"`
+	Name   string `json:"name"`
 }
 
 // Subset of blog information, returned in the list of blogs belonging to a user (see: GetUserInfo)
 type ShortBlog struct {
 	BlogRef
-	Url string `json:"url"`
-	Title string `json:"title"`
-	IsPrimary bool `json:"primary"`
-	FollowerCount uint32 `json:"followers"`
-	PostToTwitter string `json:"tweet"`
+	Url            string `json:"url"`
+	Title          string `json:"title"`
+	IsPrimary      bool   `json:"primary"`
+	FollowerCount  uint32 `json:"followers"`
+	PostToTwitter  string `json:"tweet"`
 	PostToFacebook string `json:"facebook"`
-	Visibility string `json:"type"`
+	Visibility     string `json:"type"`
 }
 
 // Tumblelog struct
 type Blog struct {
 	BlogRef
-	Url string `json:"url"`
-	Title string `json:"title"`
-	Posts int64 `json:"posts"`
-	Ask bool `json:"ask"`
-	AskAnon bool `json:"ask_anon"`
-	AskAnonPageTitle string `json:"ask_page_title"`
-	CanSendFanMail bool `json:"can_send_fan_mail"`
-	CanSubmit bool `json:"can_submit"`
-	CanSubscribe bool `json:"can_subscribe"`
-	Description string `json:"description"`
-	Followed bool `json:"followed"`
-	IsBlockedFromPrimary bool `json:"is_blocked_from_primary"`
-	IsNSFW bool `json:"is_nsfw"`
-	ShareLikes bool `json:"share_likes"`
-	SubmissionPageTitle string `json:"submission_page_title"`
-	Subscribed bool `json:"subscribed"`
-	TotalPosts int64 `json:"total_posts"`
-	Updated int64 `json:"updated"`
+	Url                  string `json:"url"`
+	Title                string `json:"title"`
+	Posts                int64  `json:"posts"`
+	Ask                  bool   `json:"ask"`
+	AskAnon              bool   `json:"ask_anon"`
+	AskAnonPageTitle     string `json:"ask_page_title"`
+	CanSendFanMail       bool   `json:"can_send_fan_mail"`
+	CanSubmit            bool   `json:"can_submit"`
+	CanSubscribe         bool   `json:"can_subscribe"`
+	Description          string `json:"description"`
+	Followed             bool   `json:"followed"`
+	IsBlockedFromPrimary bool   `json:"is_blocked_from_primary"`
+	IsNSFW               bool   `json:"is_nsfw"`
+	ShareLikes           bool   `json:"share_likes"`
+	SubmissionPageTitle  string `json:"submission_page_title"`
+	Subscribed           bool   `json:"subscribed"`
+	TotalPosts           int64  `json:"total_posts"`
+	Updated              int64  `json:"updated"`
 }
 
 // Convenience method converting a Blog into a JSON representation
@@ -95,9 +95,9 @@ func GetAvatar(client ClientInterface, name string) (string, error) {
 }
 
 // Create a BlogRef
-func NewBlogRef(client ClientInterface, name string) (*BlogRef) {
+func NewBlogRef(client ClientInterface, name string) *BlogRef {
 	return &BlogRef{
-		Name: name,
+		Name:   name,
 		client: client,
 	}
 }

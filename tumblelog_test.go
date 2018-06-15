@@ -1,12 +1,12 @@
 package tumblr
 
 import (
-	"testing"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
-	"fmt"
 	"strconv"
+	"testing"
 )
 
 func TestBlog_String(t *testing.T) {
@@ -119,7 +119,7 @@ func TestBlogRef_CreatePost(t *testing.T) {
 		params,
 	)
 	ref := NewBlogRef(client, blog)
-	if _,err := ref.CreatePost(url.Values{}); err != nil {
+	if _, err := ref.CreatePost(url.Values{}); err != nil {
 		t.Fatal("BlogRef_")
 	}
 }
@@ -157,7 +157,7 @@ func TestBlogRef_GetAvatar(t *testing.T) {
 		blogPath("/blog/%s/avatar", blog),
 		params,
 	)
-	if actual,err := ref.GetAvatar(); err != nil || actual != uri {
+	if actual, err := ref.GetAvatar(); err != nil || actual != uri {
 		t.Fatal("Ref failed to retrieve avatar")
 	}
 }
@@ -174,7 +174,7 @@ func TestBlogRef_GetDrafts(t *testing.T) {
 		params,
 	)
 	ref := NewBlogRef(client, blog)
-	if _,err := ref.GetDrafts(url.Values{}); err != nil {
+	if _, err := ref.GetDrafts(url.Values{}); err != nil {
 		t.Fatal("BlogRef_GetDrafts failed")
 	}
 }
@@ -193,7 +193,7 @@ func TestBlogRef_GetFollowers(t *testing.T) {
 		params,
 	)
 	ref := NewBlogRef(client, blog)
-	if _,err := ref.GetFollowers(); err != nil {
+	if _, err := ref.GetFollowers(); err != nil {
 		t.Fatal("BlogRef_GetFollowers failed")
 	}
 
@@ -211,7 +211,7 @@ func TestBlogRef_GetInfo(t *testing.T) {
 		params,
 	)
 	ref := NewBlogRef(client, blog)
-	if _,err := ref.GetInfo(); err != nil {
+	if _, err := ref.GetInfo(); err != nil {
 		t.Fatal("BlogRef_GetInfo")
 	}
 }
@@ -228,7 +228,7 @@ func TestBlogRef_GetPosts(t *testing.T) {
 		params,
 	)
 	ref := NewBlogRef(client, blog)
-	if _,err := ref.GetPosts(url.Values{}); err != nil {
+	if _, err := ref.GetPosts(url.Values{}); err != nil {
 		t.Fatal("BlogRef_GetPosts")
 	}
 }
@@ -245,7 +245,7 @@ func TestBlogRef_GetQueue(t *testing.T) {
 		params,
 	)
 	ref := NewBlogRef(client, blog)
-	if _,err := ref.GetQueue(url.Values{}); err != nil {
+	if _, err := ref.GetQueue(url.Values{}); err != nil {
 		t.Fatal("BlogRef_GetQueue")
 	}
 }
@@ -269,7 +269,7 @@ func TestBlogRef_ReblogPost(t *testing.T) {
 	post := NewPostRef(client, &MiniPost{})
 	post.ReblogKey = reblogKey
 	post.Id = postId
-	if _,err := ref.ReblogPost(post, url.Values{}); err != nil {
+	if _, err := ref.ReblogPost(post, url.Values{}); err != nil {
 		t.Fatal("BlogRef_ReblogPost")
 	}
 }

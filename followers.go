@@ -1,8 +1,8 @@
 package tumblr
 
 import (
-	"net/url"
 	"encoding/json"
+	"net/url"
 )
 
 type FollowingList struct {
@@ -16,7 +16,7 @@ type FollowingList struct {
 // Object from the lsit of followers response
 type FollowerList struct {
 	client    ClientInterface
-	Total     uint32 `json:"total_users"`
+	Total     uint32     `json:"total_users"`
 	Followers []Follower `json:"users"`
 	name      string
 	offset    uint
@@ -25,10 +25,10 @@ type FollowerList struct {
 
 // FollowerList substructure
 type Follower struct {
-	Following bool `json:"following"`
-	Name string `json:"name"`
-	Updated int64 `json:"updated"`
-	Url string `json:"url"`
+	Following bool   `json:"following"`
+	Name      string `json:"name"`
+	Updated   int64  `json:"updated"`
+	Url       string `json:"url"`
 }
 
 // Retrieves the list of blogs this user follows
@@ -39,12 +39,12 @@ func GetFollowing(client ClientInterface, offset, limit uint) (*FollowingList, e
 	if err != nil {
 		return nil, err
 	}
-	response := struct{
+	response := struct {
 		Response FollowingList `json:"response"`
 	}{
 		Response: FollowingList{
 			client: client,
-			limit: limit,
+			limit:  limit,
 			offset: offset,
 		},
 	}
@@ -55,7 +55,7 @@ func GetFollowing(client ClientInterface, offset, limit uint) (*FollowingList, e
 }
 
 // Retrieves the next page of followers
-func (f *FollowingList)Next() (*FollowingList, error) {
+func (f *FollowingList) Next() (*FollowingList, error) {
 	limit := f.limit
 	if limit < 1 {
 		limit = uint(len(f.Blogs))
@@ -68,7 +68,7 @@ func (f *FollowingList)Next() (*FollowingList, error) {
 }
 
 // Retrieves the previous page of followers
-func (f *FollowingList)Prev() (*FollowingList, error) {
+func (f *FollowingList) Prev() (*FollowingList, error) {
 	if f.offset <= 0 {
 		return nil, NoPrevPageError
 	}
@@ -96,8 +96,8 @@ func GetFollowers(client ClientInterface, name string, offset, limit uint) (*Fol
 	}{
 		Followers: FollowerList{
 			client: client,
-			name: name,
-			limit: limit,
+			name:   name,
+			limit:  limit,
 			offset: offset,
 		},
 	}
@@ -108,7 +108,7 @@ func GetFollowers(client ClientInterface, name string, offset, limit uint) (*Fol
 }
 
 // Get next page of a user's followers
-func (f *FollowerList)Next() (*FollowerList, error){
+func (f *FollowerList) Next() (*FollowerList, error) {
 	limit := f.limit
 	if limit < 1 {
 		limit = uint(len(f.Followers))
@@ -121,7 +121,7 @@ func (f *FollowerList)Next() (*FollowerList, error){
 }
 
 // Get previous page of a user's followers
-func (f *FollowerList)Prev() (*FollowerList, error){
+func (f *FollowerList) Prev() (*FollowerList, error) {
 	if f.offset <= 0 {
 		return nil, NoPrevPageError
 	}

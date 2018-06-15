@@ -8,11 +8,11 @@ import (
 
 // API Response structure which we'll use to pass back to behaviors
 type Response struct {
-	body []byte
+	body    []byte
 	Headers http.Header
-	Meta map[string]interface{} `json:"meta"`
-	Result map[string]interface{} `json:"response"`
-	Errors map[string]interface{} `json:"errors"`
+	Meta    map[string]interface{} `json:"meta"`
+	Result  map[string]interface{} `json:"response"`
+	Errors  map[string]interface{} `json:"errors"`
 }
 
 // Create a response object from the body bytestream and the headers structure

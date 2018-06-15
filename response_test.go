@@ -1,8 +1,8 @@
 package tumblr
 
 import (
-	"testing"
 	"net/http"
+	"testing"
 )
 
 func TestNewResponse(t *testing.T) {
@@ -16,7 +16,7 @@ func TestNewResponse(t *testing.T) {
 	if len(r.Headers) != len(headers) {
 		t.Fatal("NewResponse should generate response with the correct header data")
 	}
-	for k,_ := range headers {
+	for k := range headers {
 		if r.Headers.Get(k) != headers.Get(k) {
 			t.Fatal("NewResponse should generate response with identical header data")
 		}

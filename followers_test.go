@@ -1,10 +1,10 @@
 package tumblr
 
 import (
-	"testing"
+	"errors"
 	"net/http"
 	"net/url"
-	"errors"
+	"testing"
 )
 
 func TestGetFollowingFail(t *testing.T) {
@@ -84,8 +84,8 @@ func TestFollowingNext(t *testing.T) {
 
 func TestFollowingPrevWithoutLimit(t *testing.T) {
 	client := newTestClient("{}", nil)
-	result,_ := GetFollowing(client, 4, 0)
-	result.Blogs = []Blog{Blog{}, Blog{}}
+	result, _ := GetFollowing(client, 4, 0)
+	result.Blogs = []Blog{{}, {}}
 	expectedParams := url.Values{}
 	expectedParams.Set("offset", "2")
 	expectedParams.Set("limit", "2")
@@ -189,13 +189,13 @@ func TestGetFollowers(t *testing.T) {
 func TestFollowerNextFailsOnEmptyResult(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blogName := "david"
-	result,_ := GetFollowers(client, blogName, 1, 2)
-	_,err := result.Next()
+	result, _ := GetFollowers(client, blogName, 1, 2)
+	_, err := result.Next()
 	if err != NoNextPageError {
 		t.Fatal("Expected no next page error on empty result")
 	}
 	result.Total = 3
-	result.Followers = []Follower{Follower{}}
+	result.Followers = []Follower{{}}
 	if err != NoNextPageError {
 		t.Fatal("Expected no next page on offset exceeding total")
 	}
@@ -219,9 +219,9 @@ func TestFollowerNextFailsOnEmptyResult(t *testing.T) {
 func TestFollowerNextUsesResultSizeIfNoLimit(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blogName := "david"
-	result,_ := GetFollowers(client, blogName, 0, 0)
+	result, _ := GetFollowers(client, blogName, 0, 0)
 	result.Total = 10
-	result.Followers = []Follower{Follower{}, Follower{}}
+	result.Followers = []Follower{{}, {}}
 	params := url.Values{}
 	params.Set("offset", "2")
 	params.Set("limit", "2")
@@ -238,7 +238,7 @@ func TestFollowerNextUsesResultSizeIfNoLimit(t *testing.T) {
 func TestFollowerPrev(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blogName := "david"
-	result,_ := GetFollowers(client, blogName, 3, 2)
+	result, _ := GetFollowers(client, blogName, 3, 2)
 	params := url.Values{}
 	params.Set("offset", "1")
 	params.Set("limit", "2")
@@ -249,7 +249,7 @@ func TestFollowerPrev(t *testing.T) {
 		blogPath("/blog/%s/followers", blogName),
 		params,
 	)
-	nextResult,err := result.Prev()
+	nextResult, err := result.Prev()
 	if err != nil {
 		t.Fatal("Should be able to paginate back while offset > 0")
 	}
@@ -267,9 +267,9 @@ func TestFollowerPrev(t *testing.T) {
 func TestFollowerPrevUsesResultSizeIfNoLimit(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blogName := "david"
-	result,_ := GetFollowers(client, blogName, 4, 0)
+	result, _ := GetFollowers(client, blogName, 4, 0)
 	result.Total = 10
-	result.Followers = []Follower{Follower{}, Follower{}}
+	result.Followers = []Follower{{}, {}}
 	params := url.Values{}
 	params.Set("offset", "2")
 	params.Set("limit", "2")
@@ -282,7 +282,6 @@ func TestFollowerPrevUsesResultSizeIfNoLimit(t *testing.T) {
 	)
 	result.Prev()
 }
-
 
 func TestFollow(t *testing.T) {
 	blogName := "david"
@@ -320,11 +319,11 @@ func TestUnfollow(t *testing.T) {
 	}
 }
 
-func getFollowerString(total uint, blogs...Blog) string {
+func getFollowerString(total uint, blogs ...Blog) string {
 	return jsonStringify(map[string]interface{}{
 		"response": map[string]interface{}{
 			"total_blogs": total,
-			"blogs": blogs,
+			"blogs":       blogs,
 		},
 	})
 }

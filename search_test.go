@@ -1,16 +1,16 @@
 package tumblr
 
 import (
-	"testing"
 	"errors"
-	"net/url"
 	"net/http"
+	"net/url"
+	"testing"
 )
 
 func TestTaggedSearchFailsWithClientError(t *testing.T) {
 	clientErr := errors.New("Client error")
 	client := newTestClient("", clientErr)
-	if _, err := TaggedSearch(client,"", url.Values{}); err != clientErr {
+	if _, err := TaggedSearch(client, "", url.Values{}); err != clientErr {
 		t.Fatal("Client error should be returned")
 	}
 }
@@ -41,15 +41,14 @@ func TestTaggedSearchSuccess(t *testing.T) {
 	}
 }
 
-
 func TestSearchResults_Next(t *testing.T) {
 	client := newTestClient("{}", nil)
 	tag := "some-tag"
 	result, _ := TaggedSearch(client, tag, url.Values{})
-	if _,err := result.Next(); err != NoNextPageError {
+	if _, err := result.Next(); err != NoNextPageError {
 		t.Fatal("Next on empty results should generate error")
 	}
-	lastPost := Post{Timestamp:123456}
+	lastPost := Post{Timestamp: 123456}
 	result.Posts = []PostInterface{&Post{}, &Post{}, &lastPost}
 	params := url.Values{}
 	params.Set("before", "123456")
@@ -64,7 +63,7 @@ func TestSearchResults_Next(t *testing.T) {
 	if _, err := result.Next(); err != nil {
 		t.Fatal("Failed to retrieve next page of results")
 	}
-	lastPost = Post{Timestamp:123456, FeaturedTimestamp: 7891011}
+	lastPost = Post{Timestamp: 123456, FeaturedTimestamp: 7891011}
 	result.Posts = []PostInterface{&Post{}, &Post{}, &lastPost}
 	params = url.Values{}
 	params.Set("before", "7891011")

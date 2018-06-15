@@ -1,10 +1,10 @@
 package tumblr
 
 import (
-	"net/url"
 	"encoding/json"
-	"fmt"
 	"errors"
+	"fmt"
+	"net/url"
 	"strconv"
 )
 
@@ -51,7 +51,7 @@ func jsonStringify(b interface{}) string {
 // Create a shallow copy of a params object
 func copyParams(src url.Values) url.Values {
 	dest := url.Values{}
-	for k,v := range src {
+	for k, v := range src {
 		dest[k] = v
 	}
 	return dest
@@ -59,5 +59,6 @@ func copyParams(src url.Values) url.Values {
 
 // Error returned for a collection's Next() invocation if no next page is possible
 var NoNextPageError error = errors.New("No next page.")
+
 // Error returned for a collection's Prev() invocation if no previous page is possible
 var NoPrevPageError error = errors.New("No prev page.")
