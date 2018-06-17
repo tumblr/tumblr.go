@@ -191,8 +191,8 @@ type VideoPost struct {
 		VideoId string `json:"video_id"`
 	} `json:"video"`
 	VideoType string `json:"video_type"`
-	VideoUrl string `json:"video_url"`
-	Duration uint32 `json:"duration"`
+	VideoUrl  string `json:"video_url"`
+	Duration  uint32 `json:"duration"`
 }
 
 // PhotoPost represents a Photo Post.
