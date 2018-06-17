@@ -1,12 +1,12 @@
 package tumblr
 
 import (
-	"testing"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"reflect"
-	"fmt"
-	"errors"
+	"testing"
 )
 
 func TestPostRefLike(t *testing.T) {
@@ -16,7 +16,7 @@ func TestPostRefLike(t *testing.T) {
 	ref := PostRef{
 		client: client,
 		MiniPost: MiniPost{
-			Id: postId,
+			Id:        postId,
 			ReblogKey: reblogKey,
 		},
 	}
@@ -39,7 +39,7 @@ func TestPostRefUnlike(t *testing.T) {
 	ref := PostRef{
 		client: client,
 		MiniPost: MiniPost{
-			Id: postId,
+			Id:        postId,
 			ReblogKey: reblogKey,
 		},
 	}
@@ -57,18 +57,18 @@ func TestPostRefUnlike(t *testing.T) {
 
 func TestMakePostFromType(t *testing.T) {
 	testCases := map[string]string{
-		"quote": "QuotePost",
-		"chat": "ChatPost",
-		"photo": "PhotoPost",
-		"text": "TextPost",
-		"link": "LinkPost",
+		"quote":  "QuotePost",
+		"chat":   "ChatPost",
+		"photo":  "PhotoPost",
+		"text":   "TextPost",
+		"link":   "LinkPost",
 		"answer": "AnswerPost",
-		"audio": "AudioPost",
-		"video": "VideoPost",
+		"audio":  "AudioPost",
+		"video":  "VideoPost",
 	}
 	classPrefix := "*tumblr."
-	for postType,postClass := range testCases {
-		post,err := makePostFromType(postType)
+	for postType, postClass := range testCases {
+		post, err := makePostFromType(postType)
 		if err != nil {
 			t.Errorf("Unexpected error creating post of type `%s`", postType)
 		}
@@ -78,20 +78,20 @@ func TestMakePostFromType(t *testing.T) {
 		}
 	}
 	// test default case
-	_,err := makePostFromType("")
+	_, err := makePostFromType("")
 	if err == nil {
 		t.Fatal("Unexpected type should generate an error")
 	}
 }
 
-func TestStringifyPost (t *testing.T) {
+func TestStringifyPost(t *testing.T) {
 	post := Post{}
 	if post.String() != jsonStringify(post) {
 		t.Fatal("Post stringify does not conform to expected JSON output")
 	}
 }
 
-func TestPostDynamicAccessor (t *testing.T) {
+func TestPostDynamicAccessor(t *testing.T) {
 	post := Post{}
 	post.Id = 1986
 	if _, err := post.GetProperty("DoesNotExistProperty"); err == nil {
@@ -106,7 +106,7 @@ func TestPostDynamicAccessor (t *testing.T) {
 	}
 }
 
-func TestQueryPostsReturnsClientError (t *testing.T) {
+func TestQueryPostsReturnsClientError(t *testing.T) {
 	clientErr := errors.New("Client error")
 	client := newTestClient("", clientErr)
 	if _, err := queryPosts(client, "", "", url.Values{}); err == nil {
@@ -114,14 +114,14 @@ func TestQueryPostsReturnsClientError (t *testing.T) {
 	}
 }
 
-func TestQueryPostsReturnsJsonError (t *testing.T) {
+func TestQueryPostsReturnsJsonError(t *testing.T) {
 	client := newTestClient("{", nil)
 	if _, err := queryPosts(client, "", "", url.Values{}); err == nil {
 		t.Fatal("JSON Unmarshal error should be returned")
 	}
 }
 
-func TestQueryPostsSuccess (t *testing.T) {
+func TestQueryPostsSuccess(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blogName := "david"
 	path := "/blog/%s/something"
@@ -147,7 +147,7 @@ func TestQueryPostsSuccess (t *testing.T) {
 	}
 }
 
-func TestGetPosts (t *testing.T) {
+func TestGetPosts(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blogName := "david"
 	params := url.Values{}
@@ -163,7 +163,7 @@ func TestGetPosts (t *testing.T) {
 	}
 }
 
-func TestGetQueue (t *testing.T) {
+func TestGetQueue(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blogName := "david"
 	params := url.Values{}
@@ -179,7 +179,7 @@ func TestGetQueue (t *testing.T) {
 	}
 }
 
-func TestGetDrafts (t *testing.T) {
+func TestGetDrafts(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blogName := "david"
 	params := url.Values{}
@@ -195,7 +195,7 @@ func TestGetDrafts (t *testing.T) {
 	}
 }
 
-func TestGetSubmissions (t *testing.T) {
+func TestGetSubmissions(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blogName := "david"
 	params := url.Values{}
@@ -211,29 +211,29 @@ func TestGetSubmissions (t *testing.T) {
 	}
 }
 
-func TestDoPostMissingBlogError (t *testing.T) {
+func TestDoPostMissingBlogError(t *testing.T) {
 	client := newTestClient("{}", nil)
-	if _,err := doPost(client, "", "", url.Values{}); err == nil {
+	if _, err := doPost(client, "", "", url.Values{}); err == nil {
 		t.Fatal("Blog name should be required")
 	}
 }
 
-func TestDoPostClientError (t *testing.T) {
+func TestDoPostClientError(t *testing.T) {
 	clientErr := errors.New("Client error")
 	client := newTestClient("{}", clientErr)
-	if _,err := doPost(client, "", "blog", url.Values{}); err != clientErr {
+	if _, err := doPost(client, "", "blog", url.Values{}); err != clientErr {
 		t.Fatal("Client error should be returned")
 	}
 }
 
-func TestDoPostJsonError (t *testing.T) {
+func TestDoPostJsonError(t *testing.T) {
 	client := newTestClient("{", nil)
-	if _,err := doPost(client, "", "blog", url.Values{}); err == nil {
+	if _, err := doPost(client, "", "blog", url.Values{}); err == nil {
 		t.Fatal("Json error should be returned")
 	}
 }
 
-func TestDoPostSuccess (t *testing.T) {
+func TestDoPostSuccess(t *testing.T) {
 	var postId uint64 = 1986
 	client := newTestClient(fmt.Sprintf("{\"response\": {\"id\": %d}}", postId), nil)
 	params := url.Values{}
@@ -246,7 +246,7 @@ func TestDoPostSuccess (t *testing.T) {
 		blogPath(path, blog),
 		params,
 	)
-	if result,err := doPost(client, path, blog, params); err != nil {
+	if result, err := doPost(client, path, blog, params); err != nil {
 		t.Fatal("Do post should succeed")
 	} else {
 		if result.Id != postId {
@@ -257,7 +257,7 @@ func TestDoPostSuccess (t *testing.T) {
 	}
 }
 
-func TestNewPostRefById (t *testing.T) {
+func TestNewPostRefById(t *testing.T) {
 	testClient := newTestClient("", nil)
 	var postId uint64 = 1986
 	ref := NewPostRefById(testClient, postId)
@@ -269,8 +269,7 @@ func TestNewPostRefById (t *testing.T) {
 	}
 }
 
-
-func TestNewPostRef (t *testing.T) {
+func TestNewPostRef(t *testing.T) {
 	testClient := newTestClient("", nil)
 	mini := MiniPost{}
 	ref := NewPostRef(testClient, &mini)
@@ -282,14 +281,14 @@ func TestNewPostRef (t *testing.T) {
 	}
 }
 
-func TestPostRefSetClient (t *testing.T) {
+func TestPostRefSetClient(t *testing.T) {
 	ref := &PostRef{client: newTestClient("", nil)}
 	client2 := newTestClient("{}", nil)
 	if ref.SetClient(client2); ref.client != client2 {
 		t.Fatal("Client setter failed")
 	}
 }
-func TestCreatePost (t *testing.T) {
+func TestCreatePost(t *testing.T) {
 	client := newTestClient("{}", nil)
 	params := url.Values{}
 	blog := "david"
@@ -303,7 +302,7 @@ func TestCreatePost (t *testing.T) {
 	CreatePost(client, blog, params)
 }
 
-func TestEditPost (t *testing.T) {
+func TestEditPost(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blog := "david"
 	var postId uint64 = 1986
@@ -335,7 +334,7 @@ func TestPostRef_Edit(t *testing.T) {
 	ref.Edit(params)
 }
 
-func TestDeletePost (t *testing.T) {
+func TestDeletePost(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blog := "david"
 	var postId uint64 = 1986
@@ -367,14 +366,14 @@ func TestPostRef_Delete(t *testing.T) {
 	ref.Delete()
 }
 
-func TestReblogPostWithoutKey (t *testing.T) {
+func TestReblogPostWithoutKey(t *testing.T) {
 	client := newTestClient("{}", nil)
-	if _,err := ReblogPost(client, "blog", 1986, "", url.Values{}); err == nil {
+	if _, err := ReblogPost(client, "blog", 1986, "", url.Values{}); err == nil {
 		t.Fatal("Reblogging with empty key value should generate error")
 	}
 }
 
-func TestReblogPost (t *testing.T) {
+func TestReblogPost(t *testing.T) {
 	client := newTestClient("{}", nil)
 	blog := "david"
 	reblogKey := "reblog-key"
@@ -416,7 +415,7 @@ func TestPosts_All(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to get posts")
 	}
-	posts.Posts = []MiniPost{MiniPost{Type:"quote"}}
+	posts.Posts = []MiniPost{{Type: "quote"}}
 	if posts.parsedPosts != nil {
 		t.Fatal("Posts initialized with non-nil parsed posts")
 	}
@@ -451,14 +450,14 @@ func TestPosts_Get(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to get posts")
 	}
-	mini := MiniPost{Type:"quote"}
+	mini := MiniPost{Type: "quote"}
 	posts.Posts = []MiniPost{mini}
-	mockResponse := struct{
-		Response struct{
-				 Posts []QuotePost `json:"posts"`
-			 } `json:"response"`
+	mockResponse := struct {
+		Response struct {
+			Posts []QuotePost `json:"posts"`
+		} `json:"response"`
 	}{}
-	mockResponse.Response.Posts = []QuotePost{QuotePost{Post: Post{PostRef: PostRef{MiniPost: mini}}}}
+	mockResponse.Response.Posts = []QuotePost{{Post: Post{PostRef: PostRef{MiniPost: mini}}}}
 	posts.response.body = []byte(jsonStringify(mockResponse))
 	if posts.parsedPosts != nil {
 		t.Fatal("Posts initialized with non-nil parsed posts")

@@ -1,30 +1,30 @@
 package tumblr
 
 import (
-	"testing"
-	"net/url"
 	"net/http"
+	"net/url"
+	"testing"
 )
 
 var testJsonStringifyCases = []jsonStringifyTestCase{
-	jsonStringifyTestCase{
-		output:"{\n  \"id\": 0,\n  \"type\": \"\",\n  \"blog_name\": \"\",\n  \"reblog_key\": \"\",\n  \"body\": \"\",\n  \"can_like\": false,\n  \"can_reblog\": false,\n  \"can_reply\": false,\n  \"can_send_in_message\": false,\n  \"caption\": \"\",\n  \"date\": \"\",\n  \"display_avatar\": false,\n  \"followed\": false,\n  \"format\": \"\",\n  \"highlighted\": null,\n  \"liked\": false,\n  \"note_count\": 0,\n  \"permalink_url\": \"\",\n  \"post_url\": \"\",\n  \"reblog\": {\n    \"comment\": \"\",\n    \"tree_html\": \"\"\n  },\n  \"recommended_color\": \"\",\n  \"recommended_source\": false,\n  \"short_url\": \"\",\n  \"slug\": \"\",\n  \"source_title\": \"\",\n  \"source_url\": \"\",\n  \"state\": \"\",\n  \"summary\": \"\",\n  \"tags\": null,\n  \"timestamp\": 0,\n  \"trail\": null\n}",
-		input: Post{},
+	{
+		output: "{\n  \"id\": 0,\n  \"type\": \"\",\n  \"blog_name\": \"\",\n  \"reblog_key\": \"\",\n  \"body\": \"\",\n  \"can_like\": false,\n  \"can_reblog\": false,\n  \"can_reply\": false,\n  \"can_send_in_message\": false,\n  \"caption\": \"\",\n  \"date\": \"\",\n  \"display_avatar\": false,\n  \"followed\": false,\n  \"format\": \"\",\n  \"highlighted\": null,\n  \"liked\": false,\n  \"note_count\": 0,\n  \"permalink_url\": \"\",\n  \"post_url\": \"\",\n  \"reblog\": {\n    \"comment\": \"\",\n    \"tree_html\": \"\"\n  },\n  \"recommended_color\": \"\",\n  \"recommended_source\": false,\n  \"short_url\": \"\",\n  \"slug\": \"\",\n  \"source_title\": \"\",\n  \"source_url\": \"\",\n  \"state\": \"\",\n  \"summary\": \"\",\n  \"tags\": null,\n  \"timestamp\": 0,\n  \"trail\": null\n}",
+		input:  Post{},
 	},
-	jsonStringifyTestCase{
-		output:"{\n  \"name\": \"\",\n  \"url\": \"\",\n  \"title\": \"\",\n  \"posts\": 0,\n  \"ask\": false,\n  \"ask_anon\": false,\n  \"ask_page_title\": \"\",\n  \"can_send_fan_mail\": false,\n  \"can_submit\": false,\n  \"can_subscribe\": false,\n  \"description\": \"\",\n  \"followed\": false,\n  \"is_blocked_from_primary\": false,\n  \"is_nsfw\": false,\n  \"share_likes\": false,\n  \"submission_page_title\": \"\",\n  \"subscribed\": false,\n  \"total_posts\": 0,\n  \"updated\": 0\n}",
-		input: Blog{},
+	{
+		output: "{\n  \"name\": \"\",\n  \"url\": \"\",\n  \"title\": \"\",\n  \"posts\": 0,\n  \"ask\": false,\n  \"ask_anon\": false,\n  \"ask_page_title\": \"\",\n  \"can_send_fan_mail\": false,\n  \"can_submit\": false,\n  \"can_subscribe\": false,\n  \"description\": \"\",\n  \"followed\": false,\n  \"is_blocked_from_primary\": false,\n  \"is_nsfw\": false,\n  \"share_likes\": false,\n  \"submission_page_title\": \"\",\n  \"subscribed\": false,\n  \"total_posts\": 0,\n  \"updated\": 0\n}",
+		input:  Blog{},
 	},
 }
 
 type jsonStringifyTestCase struct {
-	input interface{}
+	input  interface{}
 	output string
 }
 
 // Basic test of stringified objects
 func TestJsonStringify(t *testing.T) {
-	for _,testCase := range testJsonStringifyCases {
+	for _, testCase := range testJsonStringifyCases {
 		if out := jsonStringify(testCase.input); out != testCase.output {
 			t.Errorf("Expected %s for json stringify of %v. Got %s", testCase.output, testCase.input, out)
 		}
@@ -56,11 +56,9 @@ func TestSetParamsUint(t *testing.T) {
 	}
 }
 
-
-
 type testClient struct {
-	response Response
-	err error
+	response           Response
+	err                error
 	confirmExpectedSet func(method, path string, params url.Values)
 }
 
@@ -86,7 +84,7 @@ func expectClientCallParams(t *testing.T, methodName, expectedMethod, expectedPa
 			t.Fatalf("%s expected %d params, saw %d", methodName, len(expectedParams), len(params))
 		}
 		// check all params equal
-		for key,val := range expectedParams {
+		for key, val := range expectedParams {
 			if len(val) < 1 {
 				t.Fatalf("%s specified a param key `%s` with no values", methodName, key)
 			}
