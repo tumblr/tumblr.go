@@ -1,10 +1,10 @@
 package tumblr
 
 import (
-	"testing"
-	"net/url"
-	"net/http"
 	"errors"
+	"net/http"
+	"net/url"
+	"testing"
 )
 
 type testEndpoint struct {
@@ -13,7 +13,7 @@ type testEndpoint struct {
 
 var testEndpoints []testEndpoint = []testEndpoint{}
 
-func getDashString(posts...Post) string {
+func getDashString(posts ...Post) string {
 	return jsonStringify(map[string]interface{}{
 		"response": map[string]interface{}{
 			"posts": posts,
@@ -35,14 +35,14 @@ func TestDashboardBothOffsetAndSinceId(t *testing.T) {
 func TestDashboardReturnsClientError(t *testing.T) {
 	clientError := errors.New("Client error")
 	client := newTestClient("{}", clientError)
-	if _,err  := GetDashboard(client, url.Values{}); err != clientError {
+	if _, err := GetDashboard(client, url.Values{}); err != clientError {
 		t.Fatal("Client errors should be returned")
 	}
 }
 
 func TestDashboardErrorsOnBadJSON(t *testing.T) {
 	client := newTestClient("{", nil)
-	if _,err  := GetDashboard(client, url.Values{}); err == nil {
+	if _, err := GetDashboard(client, url.Values{}); err == nil {
 		t.Fatal("Bad json should result in an error")
 	}
 }

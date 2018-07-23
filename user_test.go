@@ -1,10 +1,10 @@
 package tumblr
 
 import (
-	"testing"
 	"errors"
 	"net/http"
 	"net/url"
+	"testing"
 )
 
 func TestGetUserInfoClientError(t *testing.T) {

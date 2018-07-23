@@ -1,18 +1,18 @@
 package tumblr
 
 import (
-	"net/url"
 	"encoding/json"
-	"strconv"
 	"errors"
+	"net/url"
+	"strconv"
 )
 
 type Dashboard struct {
-	client ClientInterface
-	params url.Values
-	bySince bool
+	client   ClientInterface
+	params   url.Values
+	bySince  bool
 	byOffset bool
-	Posts []PostInterface `json:"posts"`
+	Posts    []PostInterface `json:"posts"`
 }
 
 // Retreive a User's dashboard
@@ -27,8 +27,8 @@ func GetDashboard(client ClientInterface, params url.Values) (*Dashboard, error)
 	}
 	result := struct {
 		Response struct {
-				 Posts []MiniPost `json:"posts"`
-			 } `json:"response"`
+			Posts []MiniPost `json:"posts"`
+		} `json:"response"`
 	}{}
 	if err = json.Unmarshal(response.body, &result); err != nil {
 		return nil, err
@@ -38,10 +38,10 @@ func GetDashboard(client ClientInterface, params url.Values) (*Dashboard, error)
 		Response Dashboard `json:"response"`
 	}{
 		Response: Dashboard{
-			client: client,
-			params: params,
+			client:   client,
+			params:   params,
 			byOffset: params.Get("offset") != "",
-			bySince: params.Get("since_id") != "",
+			bySince:  params.Get("since_id") != "",
 		},
 	}
 	full.Response.Posts = makePostsFromMinis(minis, client)
@@ -55,7 +55,7 @@ func GetDashboard(client ClientInterface, params url.Values) (*Dashboard, error)
 var MixedPaginationMethodsError error = errors.New("Cannot mix pagination between SinceId and Offset")
 
 // Returns the next page of a user's dashboard using the current page's last Post id
-func (d *Dashboard)NextBySinceId() (*Dashboard, error) {
+func (d *Dashboard) NextBySinceId() (*Dashboard, error) {
 	if d.byOffset {
 		return nil, MixedPaginationMethodsError
 	}
@@ -63,13 +63,13 @@ func (d *Dashboard)NextBySinceId() (*Dashboard, error) {
 	if size < 1 {
 		return nil, NoNextPageError
 	}
-	lastId := d.Posts[size - 1].GetSelf().Id
+	lastId := d.Posts[size-1].GetSelf().Id
 	params := setParamsUint(lastId, copyParams(d.params), "since_id")
 	return GetDashboard(d.client, params)
 }
 
 // Returns the next page of a user's dashboard using the current page's offset
-func (d *Dashboard)NextByOffset() (*Dashboard, error) {
+func (d *Dashboard) NextByOffset() (*Dashboard, error) {
 	if d.bySince {
 		return nil, MixedPaginationMethodsError
 	}
@@ -85,4 +85,3 @@ func (d *Dashboard)NextByOffset() (*Dashboard, error) {
 	params.Set("offset", strconv.Itoa(offset))
 	return GetDashboard(d.client, params)
 }
-

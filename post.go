@@ -104,6 +104,7 @@ type ReblogTrailItem struct {
 	Content       string `json:"content"`
 	ContentRaw    string `json:"content_raw"`
 	IsCurrentItem bool   `json:"is_current_item"`
+	IsRootItem    bool   `json:"is_root_item,omitempty"`
 	Post          struct {
 		// sometimes an actual int, sometimes a numeric string, always a headache
 		Id interface{} `json:"id"`
@@ -190,8 +191,8 @@ type VideoPost struct {
 		VideoId string `json:"video_id"`
 	} `json:"video"`
 	VideoType string `json:"video_type"`
-	VideoUrl string `json:"video_url"`
-	Duration uint32 `json:"duration"`
+	VideoUrl  string `json:"video_url"`
+	Duration  uint32 `json:"duration"`
 }
 
 // PhotoPost represents a Photo Post.

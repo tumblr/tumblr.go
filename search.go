@@ -1,14 +1,14 @@
 package tumblr
 
 import (
-	"net/url"
 	"encoding/json"
+	"net/url"
 	"strconv"
 )
 
 type SearchResults struct {
 	client ClientInterface
-	Posts []PostInterface `json:"response"`
+	Posts  []PostInterface `json:"response"`
 	params url.Values
 }
 
@@ -27,7 +27,7 @@ func TaggedSearch(client ClientInterface, tag string, params url.Values) (*Searc
 	}
 	minis := result.Response
 	full := SearchResults{
-		Posts: makePostsFromMinis(minis, client),
+		Posts:  makePostsFromMinis(minis, client),
 		client: client,
 		params: params,
 	}
@@ -44,7 +44,7 @@ func (s *SearchResults) Next() (*SearchResults, error) {
 	if size < 1 {
 		return nil, NoNextPageError
 	}
-	lastPost := s.Posts[size - 1].GetSelf()
+	lastPost := s.Posts[size-1].GetSelf()
 	lastTs := lastPost.FeaturedTimestamp
 	if lastTs < 1 {
 		lastTs = lastPost.Timestamp

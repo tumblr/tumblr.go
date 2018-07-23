@@ -1,10 +1,10 @@
 package tumblr
 
 import (
-	"testing"
 	"errors"
-	"net/url"
 	"net/http"
+	"net/url"
+	"testing"
 )
 
 func TestGetLikesClientErrorReturnsError(t *testing.T) {
