@@ -190,9 +190,9 @@ type VideoPost struct {
 		Width   uint32 `json:"width"`
 		VideoId string `json:"video_id"`
 	} `json:"video"`
-	VideoType string `json:"video_type"`
-	VideoUrl  string `json:"video_url"`
-	Duration  uint32 `json:"duration"`
+	VideoType string  `json:"video_type"`
+	VideoUrl  string  `json:"video_url"`
+	Duration  float32 `json:"duration"`
 }
 
 // PhotoPost represents a Photo Post.
