@@ -5,11 +5,11 @@ import (
 )
 
 type User struct {
-	Following         uint32      `json:"following"`
-	DefaultPostFormat string      `json:"default_post_format"`
-	Name              string      `json:"name"`
-	Likes             uint64      `json:"likes"`
-	Blogs             []ShortBlog `json:"blogs"`
+	Following         int64  `json:"following"`
+	DefaultPostFormat string `json:"default_post_format"`
+	Name              string `json:"name"`
+	Likes             int64  `json:"likes"`
+	Blogs             []Blog `json:"blogs"`
 }
 
 // Retrieves the current user's info (based on the client's token/secret values)

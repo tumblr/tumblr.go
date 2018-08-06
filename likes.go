@@ -10,7 +10,7 @@ type Likes struct {
 	response    *Response
 	parsedPosts []PostInterface
 	Posts       []MiniPost `json:"liked_posts"`
-	TotalLikes  uint64     `json:"liked_count"`
+	TotalLikes  int64      `json:"liked_count"`
 }
 
 // Retrieves a Users's list of Posts they have liked

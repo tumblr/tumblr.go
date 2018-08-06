@@ -20,7 +20,7 @@ type ShortBlog struct {
 	Url            string `json:"url"`
 	Title          string `json:"title"`
 	IsPrimary      bool   `json:"primary"`
-	FollowerCount  uint32 `json:"followers"`
+	FollowerCount  int64  `json:"followers"`
 	PostToTwitter  string `json:"tweet"`
 	PostToFacebook string `json:"facebook"`
 	Visibility     string `json:"type"`
@@ -47,6 +47,10 @@ type Blog struct {
 	Subscribed           bool   `json:"subscribed"`
 	TotalPosts           int64  `json:"total_posts"`
 	Updated              int64  `json:"updated"`
+	Name                 string `json:"name"`
+	Followers            int64  `json:"followers"`
+	Likes                int64  `json:"likes"`
+	Primary              bool   `json:"primary"`
 }
 
 // Convenience method converting a Blog into a JSON representation

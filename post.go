@@ -76,7 +76,7 @@ type Post struct {
 	Format           string        `json:"format"`
 	Highlighted      []interface{} `json:"highlighted"`
 	Liked            bool          `json:"liked"`
-	NoteCount        uint64        `json:"note_count"`
+	NoteCount        int64         `json:"note_count"`
 	PermalinkUrl     string        `json:"permalink_url"`
 	PostUrl          string        `json:"post_url"`
 	Reblog           struct {
@@ -170,7 +170,7 @@ type AudioPost struct {
 	AudioUrl       string `json:"audio_url"`
 	Embed          string `json:"embed"`
 	Player         string `json:"player"`
-	Plays          uint64 `json:"plays"`
+	Plays          int64  `json:"plays"`
 }
 
 // VideoPost represents a Video Post.

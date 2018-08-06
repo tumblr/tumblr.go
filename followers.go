@@ -7,7 +7,7 @@ import (
 
 type FollowingList struct {
 	client ClientInterface
-	Total  uint32 `json:"total_blogs"`
+	Total  int64  `json:"total_blogs"`
 	Blogs  []Blog `json:"blogs"`
 	offset uint
 	limit  uint
@@ -16,7 +16,7 @@ type FollowingList struct {
 // Object from the lsit of followers response
 type FollowerList struct {
 	client    ClientInterface
-	Total     uint32     `json:"total_users"`
+	Total     int64      `json:"total_users"`
 	Followers []Follower `json:"users"`
 	name      string
 	offset    uint
@@ -114,7 +114,7 @@ func (f *FollowerList) Next() (*FollowerList, error) {
 		limit = uint(len(f.Followers))
 	}
 	offset := f.offset + limit
-	if uint32(offset) >= f.Total || len(f.Followers) < 1 {
+	if int64(offset) >= f.Total || len(f.Followers) < 1 {
 		return nil, NoNextPageError
 	}
 	return GetFollowers(f.client, f.name, offset, limit)
