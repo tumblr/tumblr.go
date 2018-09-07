@@ -80,7 +80,7 @@ func GetBlogInfo(client ClientInterface, name string) (*Blog, error) {
 
 // Retrieve Blog's Avatar URI
 func GetAvatar(client ClientInterface, name string) (string, error) {
-	response, err := client.Get(blogPath("/blog/%s/avatar", name))
+	response, err := client.Get(blogPath("/blog/%s/avatar/512", name))
 	if err != nil {
 		return "", err
 	}
@@ -118,7 +118,8 @@ func (b *BlogRef) GetAvatar() (string, error) {
 
 // Retrieves blog's followers for the given blog reference
 func (b *BlogRef) GetFollowers() (*FollowerList, error) {
-	return GetFollowers(b.client, b.Name, 0, 0)
+	params := url.Values{}
+	return GetFollowers(b.client, b.Name, params)
 }
 
 // Retrieves blog's posts for the given blog reference

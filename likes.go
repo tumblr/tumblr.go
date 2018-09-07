@@ -36,6 +36,24 @@ func GetLikes(client ClientInterface, params url.Values) (*Likes, error) {
 	return &result.Response, nil
 }
 
+// GetLikesOfBlog comment
+func GetLikesOfBlog(client ClientInterface, name string, params url.Values) (*Likes, error) {
+	response, err := client.GetWithParams(blogPath("/blog/%s/likes", name), params)
+	if err != nil {
+		return nil, err
+	}
+
+	result := struct {
+		Response Likes `json:"response"`
+	}{}
+	if err = json.Unmarshal(response.body, &result); err != nil {
+		return nil, err
+	}
+	result.Response.client = client
+	result.Response.response = &response
+	return &result.Response, nil
+}
+
 // Convenience method for performing a like/unlike operation
 func doLike(client ClientInterface, path string, postId uint64, reblogKey string) error {
 	params := url.Values{}

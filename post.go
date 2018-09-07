@@ -94,6 +94,7 @@ type Post struct {
 	Tags              []string          `json:"tags"`
 	Timestamp         uint64            `json:"timestamp"`
 	FeaturedTimestamp uint64            `json:"featured_timestamp,omitempty"`
+	LikedTimestamp    uint64            `json:"liked_timestamp,omitempty"`
 	TrackName         string            `json:"track_name,omitempty"`
 	Trail             []ReblogTrailItem `json:"trail"`
 }
