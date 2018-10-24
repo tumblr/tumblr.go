@@ -50,6 +50,6 @@ func (s *SearchResults) Next() (*SearchResults, error) {
 		lastTs = lastPost.Timestamp
 	}
 	params := s.params
-	params.Set("before", strconv.FormatUint(lastTs, 10))
+	params.Set("before", strconv.FormatInt(int64(lastTs), 10))
 	return TaggedSearch(s.client, params.Get("tag"), params)
 }

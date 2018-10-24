@@ -2,43 +2,68 @@ package tumblr
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
+	"strconv"
 )
 
 type FollowingList struct {
 	client ClientInterface
-	Total  uint32 `json:"total_blogs"`
+	Total  int    `json:"total_blogs"`
 	Blogs  []Blog `json:"blogs"`
-	offset uint
-	limit  uint
+	offset int
+	limit  int
 }
 
 // Object from the lsit of followers response
 type FollowerList struct {
 	client    ClientInterface
-	Total     uint32     `json:"total_users"`
+	Total     int        `json:"total_users"`
 	Followers []Follower `json:"users"`
 	name      string
-	offset    uint
-	limit     uint
+	offset    int
+	limit     int
 }
 
 // FollowerList substructure
 type Follower struct {
 	Following bool   `json:"following"`
 	Name      string `json:"name"`
-	Updated   int64  `json:"updated"`
+	Updated   int    `json:"updated"`
 	Url       string `json:"url"`
 }
 
 // Retrieves the list of blogs this user follows
-func GetFollowing(client ClientInterface, offset, limit uint) (*FollowingList, error) {
-	params := setParamsUint(uint64(limit), url.Values{}, "limit")
-	params = setParamsUint(uint64(offset), params, "offset")
+func GetFollowing(client ClientInterface, params url.Values) (*FollowingList, error) {
 	result, err := client.GetWithParams("/user/following", params)
 	if err != nil {
 		return nil, err
 	}
+	limit, _ := strconv.Atoi(params.Get("limit"))
+	offset, _ := strconv.Atoi(params.Get("offset"))
+	response := struct {
+		Response FollowingList `json:"response"`
+	}{
+		Response: FollowingList{
+			client: client,
+			limit:  limit,
+			offset: offset,
+		},
+	}
+	if err = json.Unmarshal(result.body, &response); err != nil {
+		return nil, err
+	}
+	return &response.Response, nil
+}
+
+// GetFollowingOfBlog comment
+func GetFollowingOfBlog(client ClientInterface, name string, params url.Values) (*FollowingList, error) {
+	result, err := client.GetWithParams(blogPath("/blog/%s/following", name), params)
+	if err != nil {
+		return nil, err
+	}
+	limit, _ := strconv.Atoi(params.Get("limit"))
+	offset, _ := strconv.Atoi(params.Get("offset"))
 	response := struct {
 		Response FollowingList `json:"response"`
 	}{
@@ -58,13 +83,16 @@ func GetFollowing(client ClientInterface, offset, limit uint) (*FollowingList, e
 func (f *FollowingList) Next() (*FollowingList, error) {
 	limit := f.limit
 	if limit < 1 {
-		limit = uint(len(f.Blogs))
+		limit = int(len(f.Blogs))
 	}
 	offset := f.offset + limit
-	if offset >= uint(f.Total) {
+	if offset >= f.Total {
 		return nil, NoNextPageError
 	}
-	return GetFollowing(f.client, offset, limit)
+	params := url.Values{}
+	params.Add("limit", fmt.Sprintf("%d", limit))
+	params.Add("offset", fmt.Sprintf("%d", offset))
+	return GetFollowing(f.client, params)
 }
 
 // Retrieves the previous page of followers
@@ -74,23 +102,26 @@ func (f *FollowingList) Prev() (*FollowingList, error) {
 	}
 	limit := f.limit
 	if limit < 1 {
-		limit = uint(len(f.Blogs))
+		limit = int(len(f.Blogs))
 	}
-	var newOffset uint = f.offset - limit
+	var newOffset = f.offset - limit
 	if limit >= f.offset {
 		newOffset = 0
 	}
-	return GetFollowing(f.client, newOffset, limit)
+	params := url.Values{}
+	params.Add("limit", fmt.Sprintf("%d", limit))
+	params.Add("offset", fmt.Sprintf("%d", newOffset))
+	return GetFollowing(f.client, params)
 }
 
 // Retrieve User's followers
-func GetFollowers(client ClientInterface, name string, offset, limit uint) (*FollowerList, error) {
-	params := setParamsUint(uint64(offset), url.Values{}, "offset")
-	params = setParamsUint(uint64(limit), params, "limit")
+func GetFollowers(client ClientInterface, name string, params url.Values) (*FollowerList, error) {
 	response, err := client.GetWithParams(blogPath("/blog/%s/followers", name), params)
 	if err != nil {
 		return nil, err
 	}
+	limit, _ := strconv.Atoi(params.Get("limit"))
+	offset, _ := strconv.Atoi(params.Get("offset"))
 	followers := struct {
 		Followers FollowerList `json:"response"`
 	}{
@@ -111,13 +142,16 @@ func GetFollowers(client ClientInterface, name string, offset, limit uint) (*Fol
 func (f *FollowerList) Next() (*FollowerList, error) {
 	limit := f.limit
 	if limit < 1 {
-		limit = uint(len(f.Followers))
+		limit = int(len(f.Followers))
 	}
 	offset := f.offset + limit
-	if uint32(offset) >= f.Total || len(f.Followers) < 1 {
+	if int(offset) >= f.Total || len(f.Followers) < 1 {
 		return nil, NoNextPageError
 	}
-	return GetFollowers(f.client, f.name, offset, limit)
+	params := url.Values{}
+	params.Add("limit", fmt.Sprintf("%d", limit))
+	params.Add("offset", fmt.Sprintf("%d", offset))
+	return GetFollowers(f.client, f.name, params)
 }
 
 // Get previous page of a user's followers
@@ -127,13 +161,16 @@ func (f *FollowerList) Prev() (*FollowerList, error) {
 	}
 	limit := f.limit
 	if limit < 1 {
-		limit = uint(len(f.Followers))
+		limit = int(len(f.Followers))
 	}
 	offset := f.offset - limit
 	if limit >= f.offset {
 		offset = 0
 	}
-	return GetFollowers(f.client, f.name, offset, limit)
+	params := url.Values{}
+	params.Add("limit", fmt.Sprintf("%d", limit))
+	params.Add("offset", fmt.Sprintf("%d", offset))
+	return GetFollowers(f.client, f.name, params)
 }
 
 // Follow a blog

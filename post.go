@@ -14,7 +14,7 @@ type Posts struct {
 	response    Response
 	parsedPosts []PostInterface
 	Posts       []MiniPost `json:"posts"`
-	TotalPosts  int64      `json:"total_posts"`
+	TotalPosts  int        `json:"total_posts"`
 }
 
 // All will retrieve fully fleshed post data from stubs and cache result.
@@ -37,9 +37,9 @@ func (p *Posts) All() ([]PostInterface, error) {
 }
 
 // Get retrieves a single Post entity at a given index or returns nil if index is out of bounds.
-func (p *Posts) Get(index uint) PostInterface {
+func (p *Posts) Get(index int) PostInterface {
 	if posts, err := p.All(); err == nil {
-		if index >= uint(len(posts)) {
+		if index >= len(posts) {
 			return nil
 		}
 		return posts[index]
@@ -49,7 +49,7 @@ func (p *Posts) Get(index uint) PostInterface {
 
 // MiniPost stores the basics for what is needed in a Post.
 type MiniPost struct {
-	Id        uint64 `json:"id"`
+	Id        int    `json:"id"`
 	Type      string `json:"type"`
 	BlogName  string `json:"blog_name"`
 	ReblogKey string `json:"reblog_key"`
@@ -76,7 +76,7 @@ type Post struct {
 	Format           string        `json:"format"`
 	Highlighted      []interface{} `json:"highlighted"`
 	Liked            bool          `json:"liked"`
-	NoteCount        uint64        `json:"note_count"`
+	NoteCount        int           `json:"note_count"`
 	PermalinkUrl     string        `json:"permalink_url"`
 	PostUrl          string        `json:"post_url"`
 	Reblog           struct {
@@ -92,8 +92,9 @@ type Post struct {
 	State             string            `json:"state"`
 	Summary           string            `json:"summary"`
 	Tags              []string          `json:"tags"`
-	Timestamp         uint64            `json:"timestamp"`
-	FeaturedTimestamp uint64            `json:"featured_timestamp,omitempty"`
+	Timestamp         int               `json:"timestamp"`
+	FeaturedTimestamp int               `json:"featured_timestamp,omitempty"`
+	LikedTimestamp    int               `json:"liked_timestamp,omitempty"`
 	TrackName         string            `json:"track_name,omitempty"`
 	Trail             []ReblogTrailItem `json:"trail"`
 }
@@ -170,7 +171,7 @@ type AudioPost struct {
 	AudioUrl       string `json:"audio_url"`
 	Embed          string `json:"embed"`
 	Player         string `json:"player"`
-	Plays          uint64 `json:"plays"`
+	Plays          int    `json:"plays"`
 }
 
 // VideoPost represents a Video Post.
@@ -182,12 +183,12 @@ type VideoPost struct {
 		EmbedCode StringOrBool `json:"embed_code"`
 		Width     interface{}  `json:"width"`
 	} `json:"player"`
-	ThumbnailHeight uint32 `json:"thumbnail_height"`
+	ThumbnailHeight int    `json:"thumbnail_height"`
 	ThumbnailUrl    string `json:"thumbnail_url"`
-	ThumbnailWidth  uint32 `json:"thumbnail_width"`
+	ThumbnailWidth  int    `json:"thumbnail_width"`
 	Video           map[string]struct {
-		Height  uint32 `json:"height"`
-		Width   uint32 `json:"width"`
+		Height  int    `json:"height"`
+		Width   int    `json:"width"`
 		VideoId string `json:"video_id"`
 	} `json:"video"`
 	VideoType string  `json:"video_type"`
@@ -211,8 +212,8 @@ type Photo struct {
 
 // PhotoSize represents a particular size for a Photo.
 type PhotoSize struct {
-	Height uint32 `json:"height"`
-	Width  uint32 `json:"width"`
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
 	Url    string `json:"url"`
 }
 
@@ -305,7 +306,7 @@ func doPost(client ClientInterface, path, blogName string, params url.Values) (*
 	}
 	post := struct {
 		Response struct {
-			Id uint64 `json:"id"`
+			Id int `json:"id"`
 		} `json:"response"`
 	}{}
 	if err = json.Unmarshal(response.body, &post); err == nil {
@@ -317,7 +318,7 @@ func doPost(client ClientInterface, path, blogName string, params url.Values) (*
 }
 
 // NewPostRefById creates a PostRef for the id.
-func NewPostRefById(client ClientInterface, id uint64) *PostRef {
+func NewPostRefById(client ClientInterface, id int) *PostRef {
 	return &PostRef{
 		client: client,
 		MiniPost: MiniPost{
@@ -345,7 +346,7 @@ func CreatePost(client ClientInterface, name string, params url.Values) (*PostRe
 }
 
 // EditPost will update a Post on tumblr for the blog in name and Post in postId.
-func EditPost(client ClientInterface, blogName string, postId uint64, params url.Values) error {
+func EditPost(client ClientInterface, blogName string, postId int, params url.Values) error {
 	_, err := client.PostWithParams(blogPath("/blog/%s/post/edit", blogName), setPostId(postId, params))
 	return err
 }
@@ -356,7 +357,7 @@ func (p *PostRef) Edit(params url.Values) error {
 }
 
 // ReblogPost will reblog the post in postId and reblogKey to the blog blogName.
-func ReblogPost(client ClientInterface, blogName string, postId uint64, reblogKey string, params url.Values) (*PostRef, error) {
+func ReblogPost(client ClientInterface, blogName string, postId int, reblogKey string, params url.Values) (*PostRef, error) {
 	if reblogKey == "" {
 		return nil, errors.New("No reblog key provided")
 	}
@@ -370,7 +371,7 @@ func (p *PostRef) ReblogOnBlog(name string, params url.Values) (*PostRef, error)
 }
 
 // DeletePost will delete a Post on tumblr for the blog in name and Post in postId.
-func DeletePost(client ClientInterface, name string, postId uint64) error {
+func DeletePost(client ClientInterface, name string, postId int) error {
 	_, err := client.PostWithParams(blogPath("/blog/%s/post/delete", name), setPostId(postId, url.Values{}))
 	return err
 }

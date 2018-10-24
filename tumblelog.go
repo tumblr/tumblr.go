@@ -20,7 +20,7 @@ type ShortBlog struct {
 	Url            string `json:"url"`
 	Title          string `json:"title"`
 	IsPrimary      bool   `json:"primary"`
-	FollowerCount  uint32 `json:"followers"`
+	FollowerCount  int    `json:"followers"`
 	PostToTwitter  string `json:"tweet"`
 	PostToFacebook string `json:"facebook"`
 	Visibility     string `json:"type"`
@@ -31,7 +31,7 @@ type Blog struct {
 	BlogRef
 	Url                  string `json:"url"`
 	Title                string `json:"title"`
-	Posts                int64  `json:"posts"`
+	Posts                int    `json:"posts"`
 	Ask                  bool   `json:"ask"`
 	AskAnon              bool   `json:"ask_anon"`
 	AskAnonPageTitle     string `json:"ask_page_title"`
@@ -45,8 +45,12 @@ type Blog struct {
 	ShareLikes           bool   `json:"share_likes"`
 	SubmissionPageTitle  string `json:"submission_page_title"`
 	Subscribed           bool   `json:"subscribed"`
-	TotalPosts           int64  `json:"total_posts"`
-	Updated              int64  `json:"updated"`
+	TotalPosts           int    `json:"total_posts"`
+	Updated              int    `json:"updated"`
+	Name                 string `json:"name"`
+	Followers            int    `json:"followers"`
+	Likes                int    `json:"likes"`
+	Primary              bool   `json:"primary"`
 }
 
 // Convenience method converting a Blog into a JSON representation
@@ -76,7 +80,7 @@ func GetBlogInfo(client ClientInterface, name string) (*Blog, error) {
 
 // Retrieve Blog's Avatar URI
 func GetAvatar(client ClientInterface, name string) (string, error) {
-	response, err := client.Get(blogPath("/blog/%s/avatar", name))
+	response, err := client.Get(blogPath("/blog/%s/avatar/512", name))
 	if err != nil {
 		return "", err
 	}
@@ -114,7 +118,8 @@ func (b *BlogRef) GetAvatar() (string, error) {
 
 // Retrieves blog's followers for the given blog reference
 func (b *BlogRef) GetFollowers() (*FollowerList, error) {
-	return GetFollowers(b.client, b.Name, 0, 0)
+	params := url.Values{}
+	return GetFollowers(b.client, b.Name, params)
 }
 
 // Retrieves blog's posts for the given blog reference
