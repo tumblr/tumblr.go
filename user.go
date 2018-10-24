@@ -5,10 +5,10 @@ import (
 )
 
 type User struct {
-	Following         int64  `json:"following"`
+	Following         int    `json:"following"`
 	DefaultPostFormat string `json:"default_post_format"`
 	Name              string `json:"name"`
-	Likes             int64  `json:"likes"`
+	Likes             int    `json:"likes"`
 	Blogs             []Blog `json:"blogs"`
 }
 

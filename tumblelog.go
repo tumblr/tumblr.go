@@ -20,7 +20,7 @@ type ShortBlog struct {
 	Url            string `json:"url"`
 	Title          string `json:"title"`
 	IsPrimary      bool   `json:"primary"`
-	FollowerCount  int64  `json:"followers"`
+	FollowerCount  int    `json:"followers"`
 	PostToTwitter  string `json:"tweet"`
 	PostToFacebook string `json:"facebook"`
 	Visibility     string `json:"type"`
@@ -31,7 +31,7 @@ type Blog struct {
 	BlogRef
 	Url                  string `json:"url"`
 	Title                string `json:"title"`
-	Posts                int64  `json:"posts"`
+	Posts                int    `json:"posts"`
 	Ask                  bool   `json:"ask"`
 	AskAnon              bool   `json:"ask_anon"`
 	AskAnonPageTitle     string `json:"ask_page_title"`
@@ -45,11 +45,11 @@ type Blog struct {
 	ShareLikes           bool   `json:"share_likes"`
 	SubmissionPageTitle  string `json:"submission_page_title"`
 	Subscribed           bool   `json:"subscribed"`
-	TotalPosts           int64  `json:"total_posts"`
-	Updated              int64  `json:"updated"`
+	TotalPosts           int    `json:"total_posts"`
+	Updated              int    `json:"updated"`
 	Name                 string `json:"name"`
-	Followers            int64  `json:"followers"`
-	Likes                int64  `json:"likes"`
+	Followers            int    `json:"followers"`
+	Likes                int    `json:"likes"`
 	Primary              bool   `json:"primary"`
 }
 

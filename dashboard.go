@@ -20,13 +20,13 @@ type Dashboard struct {
 func GetDashboard(client ClientInterface, params url.Values) (*Dashboard, error) {
 	cnt := 0
 	if params.Get("offset") != "" {
-		cnt++;
+		cnt++
 	}
 	if params.Get("since_id") != "" {
-		cnt++;
+		cnt++
 	}
 	if params.Get("before_id") != "" {
-		cnt++;
+		cnt++
 	}
 	if cnt > 1 {
 		return nil, errors.New("Only can specify one of offset, since_id and before_id")
@@ -76,7 +76,7 @@ func (d *Dashboard) NextBySinceId() (*Dashboard, error) {
 		return nil, NoNextPageError
 	}
 	lastId := d.Posts[size-1].GetSelf().Id
-	params := setParamsUint(lastId, copyParams(d.params), "since_id")
+	params := setParamsInt(lastId, copyParams(d.params), "since_id")
 	return GetDashboard(d.client, params)
 }
 
@@ -90,7 +90,7 @@ func (d *Dashboard) NextByBeforeId() (*Dashboard, error) {
 		return nil, NoNextPageError
 	}
 	lastId := d.Posts[size-1].GetSelf().Id
-	params := setParamsUint(lastId, copyParams(d.params), "before_id")
+	params := setParamsInt(lastId, copyParams(d.params), "before_id")
 	return GetDashboard(d.client, params)
 }
 

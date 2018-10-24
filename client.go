@@ -29,13 +29,13 @@ type ClientInterface interface {
 }
 
 // shortcut for the most common case
-func setPostId(id uint64, params url.Values) url.Values {
-	return setParamsUint(id, params, "id")
+func setPostId(id int, params url.Values) url.Values {
+	return setParamsInt(id, params, "id")
 }
 
 // convenience function for setting an int
-func setParamsUint(id uint64, params url.Values, key string) url.Values {
-	params.Set(key, strconv.FormatUint(id, 10))
+func setParamsInt(id int, params url.Values, key string) url.Values {
+	params.Set(key, strconv.FormatInt(int64(id), 10))
 	return params
 }
 

@@ -9,27 +9,27 @@ import (
 
 type FollowingList struct {
 	client ClientInterface
-	Total  int64  `json:"total_blogs"`
+	Total  int    `json:"total_blogs"`
 	Blogs  []Blog `json:"blogs"`
-	offset int64
-	limit  int64
+	offset int
+	limit  int
 }
 
 // Object from the lsit of followers response
 type FollowerList struct {
 	client    ClientInterface
-	Total     int64      `json:"total_users"`
+	Total     int        `json:"total_users"`
 	Followers []Follower `json:"users"`
 	name      string
-	offset    int64
-	limit     int64
+	offset    int
+	limit     int
 }
 
 // FollowerList substructure
 type Follower struct {
 	Following bool   `json:"following"`
 	Name      string `json:"name"`
-	Updated   int64  `json:"updated"`
+	Updated   int    `json:"updated"`
 	Url       string `json:"url"`
 }
 
@@ -39,8 +39,8 @@ func GetFollowing(client ClientInterface, params url.Values) (*FollowingList, er
 	if err != nil {
 		return nil, err
 	}
-	limit, _ := strconv.ParseInt(params.Get("limit"), 10, 64)
-	offset, _ := strconv.ParseInt(params.Get("offset"), 10, 64)
+	limit, _ := strconv.Atoi(params.Get("limit"))
+	offset, _ := strconv.Atoi(params.Get("offset"))
 	response := struct {
 		Response FollowingList `json:"response"`
 	}{
@@ -62,8 +62,8 @@ func GetFollowingOfBlog(client ClientInterface, name string, params url.Values) 
 	if err != nil {
 		return nil, err
 	}
-	limit, _ := strconv.ParseInt(params.Get("limit"), 10, 64)
-	offset, _ := strconv.ParseInt(params.Get("offset"), 10, 64)
+	limit, _ := strconv.Atoi(params.Get("limit"))
+	offset, _ := strconv.Atoi(params.Get("offset"))
 	response := struct {
 		Response FollowingList `json:"response"`
 	}{
@@ -83,7 +83,7 @@ func GetFollowingOfBlog(client ClientInterface, name string, params url.Values) 
 func (f *FollowingList) Next() (*FollowingList, error) {
 	limit := f.limit
 	if limit < 1 {
-		limit = int64(len(f.Blogs))
+		limit = int(len(f.Blogs))
 	}
 	offset := f.offset + limit
 	if offset >= f.Total {
@@ -102,7 +102,7 @@ func (f *FollowingList) Prev() (*FollowingList, error) {
 	}
 	limit := f.limit
 	if limit < 1 {
-		limit = int64(len(f.Blogs))
+		limit = int(len(f.Blogs))
 	}
 	var newOffset = f.offset - limit
 	if limit >= f.offset {
@@ -120,8 +120,8 @@ func GetFollowers(client ClientInterface, name string, params url.Values) (*Foll
 	if err != nil {
 		return nil, err
 	}
-	limit, _ := strconv.ParseInt(params.Get("limit"), 10, 64)
-	offset, _ := strconv.ParseInt(params.Get("offset"), 10, 64)
+	limit, _ := strconv.Atoi(params.Get("limit"))
+	offset, _ := strconv.Atoi(params.Get("offset"))
 	followers := struct {
 		Followers FollowerList `json:"response"`
 	}{
@@ -142,10 +142,10 @@ func GetFollowers(client ClientInterface, name string, params url.Values) (*Foll
 func (f *FollowerList) Next() (*FollowerList, error) {
 	limit := f.limit
 	if limit < 1 {
-		limit = int64(len(f.Followers))
+		limit = int(len(f.Followers))
 	}
 	offset := f.offset + limit
-	if int64(offset) >= f.Total || len(f.Followers) < 1 {
+	if int(offset) >= f.Total || len(f.Followers) < 1 {
 		return nil, NoNextPageError
 	}
 	params := url.Values{}
@@ -161,7 +161,7 @@ func (f *FollowerList) Prev() (*FollowerList, error) {
 	}
 	limit := f.limit
 	if limit < 1 {
-		limit = int64(len(f.Followers))
+		limit = int(len(f.Followers))
 	}
 	offset := f.offset - limit
 	if limit >= f.offset {

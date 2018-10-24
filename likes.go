@@ -10,7 +10,7 @@ type Likes struct {
 	response    *Response
 	parsedPosts []PostInterface
 	Posts       []MiniPost `json:"liked_posts"`
-	TotalLikes  int64      `json:"liked_count"`
+	TotalLikes  int        `json:"liked_count"`
 }
 
 // Retrieves a Users's list of Posts they have liked
@@ -55,7 +55,7 @@ func GetLikesOfBlog(client ClientInterface, name string, params url.Values) (*Li
 }
 
 // Convenience method for performing a like/unlike operation
-func doLike(client ClientInterface, path string, postId uint64, reblogKey string) error {
+func doLike(client ClientInterface, path string, postId int, reblogKey string) error {
 	params := url.Values{}
 	params.Set("reblog_key", reblogKey)
 	_, err := client.PostWithParams(path, setPostId(postId, params))
@@ -63,12 +63,12 @@ func doLike(client ClientInterface, path string, postId uint64, reblogKey string
 }
 
 // Like a post on behalf of a user
-func LikePost(client ClientInterface, postId uint64, reblogKey string) error {
+func LikePost(client ClientInterface, postId int, reblogKey string) error {
 	return doLike(client, "/user/like", postId, reblogKey)
 }
 
 // Unlike a post on behalf of a user
-func UnlikePost(client ClientInterface, postId uint64, reblogKey string) error {
+func UnlikePost(client ClientInterface, postId int, reblogKey string) error {
 	return doLike(client, "/user/unlike", postId, reblogKey)
 }
 
